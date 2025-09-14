@@ -16,9 +16,11 @@ import com.ll.demo03.global.rsData.RsData;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class SurlController {
 	private final SurlService surlService;
 	private final Rq rq;
@@ -34,13 +36,9 @@ public class SurlController {
 	public RsData<Surl> add(String body, String url) {
 		Member member = rq.getMember(); // 현재 브라우저로 로그인한 회원
 
-		System.out.println("before get id");
-		member.getId();
-		System.out.println("after get id");
-
-		System.out.println("before get username");
-		member.getUsername();
-		System.out.println("after get username");
+		// System.out.println("before get id");
+		// log.debug("log test");
+		// log는 개발과 테스트 모드에서만 실행, 운영모드 실행 안됨 (로그레벨은 info로 올렸기 때문에)
 
 		return surlService.add(member, body, url);
 	}
