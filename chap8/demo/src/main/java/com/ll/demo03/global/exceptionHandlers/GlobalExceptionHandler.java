@@ -6,11 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.ll.demo03.global.exceptions.GlobalException;
 import com.ll.demo03.global.rq.Rq;
@@ -49,12 +51,14 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(GlobalException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
 	public ResponseEntity<RsData<Empty>> handleException(GlobalException ex) {
 		RsData<Empty> rsData = ex.getRsData();
 
 		return ResponseEntity
 			.status(rsData.getStatusCode())
+			.contentType(MediaType.APPLICATION_JSON)
 			.body(rsData);
 	}
 

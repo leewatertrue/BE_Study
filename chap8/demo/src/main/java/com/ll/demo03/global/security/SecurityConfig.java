@@ -30,10 +30,16 @@ public class SecurityConfig {
 					.permitAll()
 					.requestMatchers("/actuator/**")
 					.permitAll()
-					.anyRequest() // 위에 있는 것 외 어떤 요청이든 다 인증되어야 함
+					.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+					.permitAll()
+					.requestMatchers(HttpMethod.GET, "/")
+					.permitAll()
+					.requestMatchers(HttpMethod.GET, "/g/*")
+					.permitAll()
+					.anyRequest()
 					.authenticated()
 			)
-			.headers( // h2 콘솔
+			.headers(
 				headers ->
 					headers.frameOptions(
 						frameOptions ->
@@ -44,7 +50,7 @@ public class SecurityConfig {
 				csrf ->
 					csrf.disable()
 			)
-			.formLogin( // 로그인 화면은 허용
+			.formLogin(
 				formLogin ->
 					formLogin
 						.permitAll()

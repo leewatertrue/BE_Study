@@ -17,6 +17,8 @@ import com.ll.demo03.global.rq.Rq;
 import com.ll.demo03.global.rsData.RsData;
 import com.ll.demo03.standard.dto.Empty;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
+@Tag(name = "ApiMemberController", description = "회원 CRUD 컨트롤러")
 public class ApiV1MemberController {
 	private final MemberService memberService;
 	private final AuthTokenService authTokenService;
@@ -54,6 +57,7 @@ public class ApiV1MemberController {
 
 	@PostMapping("")
 	@Transactional
+	@Operation(summary = "회원가입")
 	public RsData<MemberJoinRespBody> join(
 		@RequestBody @Valid MemberJoinReqBody reqBody
 	) {
@@ -67,6 +71,7 @@ public class ApiV1MemberController {
 			)
 		);
 	}
+
 
 	@AllArgsConstructor
 	@Getter
@@ -85,6 +90,7 @@ public class ApiV1MemberController {
 
 	@PostMapping("/login")
 	@Transactional
+	@Operation(summary = "로그인", description = "성공하면 accessToken, refreshToken 쿠키가 생성됨")
 	public RsData<MemberLoginRespBody> login(
 		@RequestBody @Valid MemberLoginReqBody reqBody
 	) {
@@ -112,6 +118,7 @@ public class ApiV1MemberController {
 
 	@DeleteMapping("/logout")
 	@Transactional
+	@Operation(summary = "로그아웃")
 	public RsData<Empty> logout() {
 		rq.removeCookie("actorUsername");
 		rq.removeCookie("actorPassword");
