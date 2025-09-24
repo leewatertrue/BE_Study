@@ -1,7 +1,9 @@
 package com.ll.demo03.domain.member.member.service;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class MemberService {
 	private final MemberRepository memberRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username);
@@ -30,8 +33,9 @@ public class MemberService {
 
 		Member member = Member.builder()
 			.username(username)
-			.password(password)
+			.password(passwordEncoder.encode(password))
 			.nickname(nickname)
+			.apiKey(UUID.randomUUID().toString())
 			.build();
 
 		memberRepository.save(member);
@@ -45,5 +49,17 @@ public class MemberService {
 
 	public long count() {
 		return memberRepository.count();
+	}
+
+	public boolean matchPassword(String password, String encodedPassword) {
+		return passwordEncoder.matches(password, encodedPassword);
+	}
+
+	public Optional<Member> findById(long id) {
+		return memberRepository.findById(id);
+	}
+
+	public Optional<Member> findByApiKey(String apiKey) {
+		return memberRepository.findByApiKey(apiKey);
 	}
 }
