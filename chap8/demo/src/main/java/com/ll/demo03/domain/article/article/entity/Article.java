@@ -24,6 +24,6 @@ public class Article extends BaseTime {
 	private String title;
 	@Column(columnDefinition = "TEXT")
 	private String body;
-	@ManyToOne // many가 article, one이 member (하나의 회원이 많은 아티클)
+	@ManyToOne
 	private Member author;
 }
