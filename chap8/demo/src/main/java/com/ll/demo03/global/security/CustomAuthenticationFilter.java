@@ -1,6 +1,7 @@
 package com.ll.demo03.global.security;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,7 +10,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ll.demo03.domain.member.member.entity.Member;
+import com.ll.demo03.domain.auth.auth.service.AuthTokenService;
 import com.ll.demo03.domain.member.member.service.MemberService;
 import com.ll.demo03.global.rq.Rq;
 import com.ll.demo03.standard.util.Ut;
@@ -26,33 +27,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	private final MemberService memberService;
+	private final AuthTokenService authTokenService;
 	private final Rq rq;
 
 	@Override
 	@SneakyThrows
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain) {
-		String apiKey = rq.getCookieValue("apiKey", null);
+		String accessToken = rq.getCookieValue("accessToken", null);
 
-		if (apiKey == null) {
+		if (accessToken == null) {
 			String authorization = req.getHeader("Authorization");
 			if (authorization != null) {
-				apiKey = authorization.substring("bearer ".length());
+				accessToken = authorization.substring("bearer ".length());
 			}
 		}
 
-		if (Ut.str.isBlank(apiKey)) {
+		if (Ut.str.isBlank(accessToken)) {
 			filterChain.doFilter(req, resp);
 			return;
 		}
 
-		Member loginedMember = memberService.findByApiKey(apiKey).orElse(null);
-
-		if (loginedMember == null) {
+		if (!authTokenService.validateToken(accessToken)) {
 			filterChain.doFilter(req, resp);
 			return;
 		}
 
-		User user = new User(loginedMember.getId() + "", "", List.of());
+		Map<String, Object> accessTokenData = authTokenService.getDataFrom(accessToken);
+
+		long id = (int) accessTokenData.get("id");
+
+		User user = new User(id + "", "", List.of());
 		Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
