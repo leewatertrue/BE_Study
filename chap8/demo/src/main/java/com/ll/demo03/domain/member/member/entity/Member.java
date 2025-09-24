@@ -24,7 +24,8 @@ public class Member extends BaseTime {
 	private String password;
 	private String nickname;
 	@Column(unique = true)
-	private String apiKey;
+	private String refreshToken;
+	//private String apiKey;
 
 	public String getName() {
 		return nickname;
